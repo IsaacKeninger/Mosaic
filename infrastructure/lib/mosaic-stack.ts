@@ -40,8 +40,11 @@ export class MosaicStack extends cdk.Stack {
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
     });
 
+    // Bucket name is auto-generated (CDK appends account/region/hash) since
+    // S3 bucket names are globally unique across all AWS accounts, not just
+    // this one — a fixed name like "mosaic-models" collides with any other
+    // AWS customer who already claimed it.
     const modelBucket = new s3.Bucket(this, "ModelBucket", {
-      bucketName: "mosaic-models",
       versioned: true,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
@@ -60,5 +63,6 @@ export class MosaicStack extends cdk.Stack {
     // /persona/generate/{clusterId}, /persona/{userId}).
 
     new cdk.CfnOutput(this, "ApiUrl", { value: api.url });
+    new cdk.CfnOutput(this, "ModelBucketName", { value: modelBucket.bucketName });
   }
 }
