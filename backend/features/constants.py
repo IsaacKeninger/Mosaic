@@ -1,15 +1,34 @@
-"""Spending category mappings used across feature engineering."""
+"""Spending category mappings used across feature engineering.
 
-# Maps our normalized categories to Plaid's personal_finance_category values.
-CATEGORY_MAP: dict[str, list[str]] = {
-    "food_dining": ["FOOD_AND_DRINK"],
-    "shopping": ["GENERAL_MERCHANDISE"],
-    "entertainment": ["ENTERTAINMENT"],
-    "travel": ["TRAVEL"],
-    "health_fitness": ["MEDICAL", "PERSONAL_CARE"],
-    "subscriptions": ["ENTERTAINMENT", "GENERAL_SERVICES"],
-    "groceries": ["FOOD_AND_DRINK"],
+Plaid's personal_finance_category has two levels: a coarse `primary` (e.g.
+FOOD_AND_DRINK) and a finer `detailed` (e.g. FOOD_AND_DRINK_GROCERIES vs.
+FOOD_AND_DRINK_RESTAURANT). Groceries and dining share the same primary
+category, so that split can only be made using `detailed`.
+"""
+
+PRIMARY_CATEGORY_TO_BUCKET: dict[str, str] = {
+    "FOOD_AND_DRINK": "food_dining",
+    "GENERAL_MERCHANDISE": "shopping",
+    "ENTERTAINMENT": "entertainment",
+    "TRAVEL": "travel",
+    "TRANSPORTATION": "travel",
+    "MEDICAL": "health_fitness",
+    "PERSONAL_CARE": "health_fitness",
 }
+
+GROCERY_DETAILED_CATEGORY = "FOOD_AND_DRINK_GROCERIES"
+
+# Categories eligible to count toward pct_subscriptions when also flagged as
+# a recurring transaction (see features/engineer.py's recurring detector).
+SUBSCRIPTION_ELIGIBLE_BUCKETS = {"entertainment"}
+
+
+def bucket_for_transaction(primary: str | None, detailed: str | None) -> str:
+    """Map a Plaid category pair to one of our spending buckets, or 'other'."""
+    if detailed == GROCERY_DETAILED_CATEGORY:
+        return "groceries"
+    return PRIMARY_CATEGORY_TO_BUCKET.get(primary or "", "other")
+
 
 FEATURE_COLUMNS: list[str] = [
     "pct_food_dining",

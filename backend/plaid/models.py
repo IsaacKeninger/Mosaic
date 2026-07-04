@@ -11,6 +11,7 @@ class Transaction(BaseModel):
     merchant_name: str | None = None
     normalized_merchant: str | None = None
     category: str | None = None
+    category_detailed: str | None = None
     date: date
     is_recurring: bool = False
 

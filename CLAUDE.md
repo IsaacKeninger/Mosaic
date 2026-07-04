@@ -507,7 +507,7 @@ internship and personal projects demonstrates depth of knowledge, not just expos
 
 ---
 
-## Interview Talking Points
+## Talking Points
 
 1. **Merchant normalization** — "Raw Plaid data has noisy merchant names. I used fuzzy
    matching to normalize 'WHOLEFDS #1234' and 'WHOLE FOODS MARKET' to the same entity
